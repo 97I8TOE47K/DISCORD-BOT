@@ -42,16 +42,14 @@ async def on_command_error(ctx, error):
 
 #functions
 def get_quote():
-  response = requests.get("https://zenquotes.io/api/random")
-  json_data = json.loads(response.text)
-  quote = json_data[0]['q'] + " -" + json_data[0]['a']
-  return(quote)  
+    response = requests.get("https://zenquotes.io/api/random")
+    json_data = json.loads(response.text)
+    return json_data[0]['q'] + " -" + json_data[0]['a']  
 
 def get_joke():
-  response = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist&type=single")
-  json_data = json.loads(response.text)
-  joke = json_data["joke"]
-  return (joke)
+    response = requests.get("https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist&type=single")
+    json_data = json.loads(response.text)
+    return json_data["joke"]
 
 def abhishek():
   personal = discord.Embed(title = "Abhishek Saxena (Creater Himself)", description = "A 13 year Indian boy from Lucknow , who started this bot with a small idea to learn something new")
@@ -136,18 +134,18 @@ async def ban(ctx, member : discord.Member,*, reason = "*No specific reason prov
 @client.command()
 @commands.has_permissions(ban_members = True)
 async def unban(ctx,*,member):
-  banned_users = await ctx.guild.bans()
-  member_name , member_disc = member.split('#')
+    banned_users = await ctx.guild.bans()
+    member_name , member_disc = member.split('#')
 
-  for banned_entry in banned_users:
-    user = banned_entry.user
+    for banned_entry in banned_users:
+        user = banned_entry.user
 
-    if(user.name, user.discriminator) == (member_name,member_disc):
-      await ctx.guild.unban(user)
-      await ctx.send(member_name + " has been unbanned!")
+        if (user.name, user.discriminator) == (member_name,member_disc):
+            await ctx.guild.unban(user)
+            await ctx.send(f'{member_name} has been unbanned!')
 
-    else:
-      await ctx.send(member+" was not found")
+        else:
+            await ctx.send(f'{member} was not found')
 
 @client.command()
 @commands.has_permissions(ban_members = True)
@@ -227,21 +225,18 @@ async def tictactoe(ctx, p1: discord.Member, p2: discord.Member):
         # print the board
         line = ""
         for x in range(len(board)):
-            if x == 2 or x == 5 or x == 8:
-                line += " " + board[x]
+            line += f' {board[x]}'
+            if x in [2, 5, 8]:
                 await ctx.send(line)
                 line = ""
-            else:
-                line += " " + board[x]
-
         # determine who goes first
         num = random.randint(1, 2)
         if num == 1:
             turn = player1
-            await ctx.send("It is <@" + str(player1.id) + ">'s turn.")
+            await ctx.send(f'It is <@{str(turn.id)}' + ">'s turn.")
         elif num == 2:
             turn = player2
-            await ctx.send("It is <@" + str(player2.id) + ">'s turn.")
+            await ctx.send(f'It is <@{str(turn.id)}' + ">'s turn.")
     else:
         await ctx.send("A game is already in progress! Finish it before starting a new one.")
 
@@ -261,24 +256,21 @@ async def place(ctx, pos: int):
                 mark = ":regional_indicator_x:"
             elif turn == player2:
                 mark = ":o2:"
-            if 0 < pos < 10 and board[pos - 1] == ":white_large_square:" :
+            if 0 < pos < 10 and board[pos - 1] == ":white_large_square:":
                 board[pos - 1] = mark
                 count += 1
 
                 # print the board
                 line = ""
                 for x in range(len(board)):
-                    if x == 2 or x == 5 or x == 8:
-                        line += " " + board[x]
+                    line += f' {board[x]}'
+                    if x in [2, 5, 8]:
                         await ctx.send(line)
                         line = ""
-                    else:
-                        line += " " + board[x]
-
                 checkWinner(winningConditions, mark)
                 print(count)
                 if gameOver == True:
-                    await ctx.send(mark + " wins!")
+                    await ctx.send(f'{mark} wins!')
                 elif count >= 9:
                     gameOver = True
                     await ctx.send("It's a tie!")
@@ -389,20 +381,17 @@ async def beg(ctx):
 
 #chinmay open account is not a command it is a function
 async def open_account(user):
-  users = await get_bank_data()
+    users = await get_bank_data()
 
-  if str(user.id) in users:
-    return False
+    if str(user.id) in users:
+        return False
 
-  else:
-    users[str(user.id)] = {}
-    users[str(user.id)]["wallet"] = 1000
-    users[str(user.id)]["bank"] = 0
+    else:
+        users[str(user.id)] = {'wallet': 1000, 'bank': 0}
+    with open("mainbank.json", "w") as f:
+      json.dump(users, f)
 
-  with open("mainbank.json", "w") as f:
-    json.dump(users, f)
-
-  return True
+    return True
 
 async def get_bank_data():
   with open("mainbank.json", "r") as f:

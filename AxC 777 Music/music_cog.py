@@ -42,7 +42,7 @@ music_cmds_dict = {
       '**Alias: **`?q`',
       "**Command Description: **Shows the audio queue (the stuff to be played after the current audio is over)"
     ],
-    
+
 
     3:
     [
@@ -99,7 +99,7 @@ music_cmds_dict = {
       '**Alias: **`?c`',
       "**Command Description: **Clears the queue"
     ]
-    
+
   }
 }
 
@@ -108,8 +108,8 @@ regular_cmds = ""
 for i in range(len(music_cmds_dict['normal_cmds'])):
     for y in range(3):
         regular_cmds = regular_cmds + music_cmds_dict['normal_cmds'][i][y] + "\n"
-        
-    regular_cmds = regular_cmds + "\n"
+
+    regular_cmds += "\n"
 
       # print(regular_cmds)
 
@@ -183,7 +183,7 @@ class music_cog(commands.Cog):
 
             #try to connect to voice channel if you are not already connected
 
-            if self.vc == "" or not self.vc.is_connected() or self.vc == None:
+            if self.vc == "" or not self.vc.is_connected() or self.vc is None:
                 self.vc = await self.music_queue[0][1].connect()
             else:
                 await self.vc.move_to(self.music_queue[0][1])
@@ -248,22 +248,21 @@ class music_cog(commands.Cog):
 
     @commands.command(name="queue", help="Displays the current songs in queue", aliases = ['q'])
     async def queue(self, ctx):
+        retval = ""
         if len(self.music_queue) <= 50:
-            retval = ""
-            for i in range(0, len(self.music_queue)):
+            for i in range(len(self.music_queue)):
                 retval += self.music_queue[i][0]['title'] + "\n"
 
             print(retval)
 
-            if retval != "":
-                await ctx.send(retval)
-                await ctx.send('https://tenor.com/view/squid-game-netflix-egybest-film-squid-gif-23324577')
-            else:
+            if not retval:
                 await ctx.send("No music in queue")
 
+            else:
+                await ctx.send(retval)
+                await ctx.send('https://tenor.com/view/squid-game-netflix-egybest-film-squid-gif-23324577')
         else:
-            retval = ""
-            for i in range(0, 51):
+            for i in range(51):
                 retval += self.music_queue[i][0]['title'] + "\n"
 
             print(retval)
@@ -399,7 +398,7 @@ class music_cog(commands.Cog):
                 else:
                     await ctx.send("Song added to the queue")
 
-                    for num in range(looping_constant + 1):
+                    for _ in range(looping_constant + 1):
                         self.music_queue.append([song, voice_channel])
 
                     if self.is_playing == False:
@@ -410,25 +409,25 @@ class music_cog(commands.Cog):
                 # print(query)
 
                 song = self.search_yt(query)
-                
+
                 if type(song) == type(True):
-                  await ctx.send(
-                    "Could not play the song. Incorrect format try another keyword. This could be due to a playlist or a livestream format."
-                )
+                      await ctx.send(
+                        "Could not play the song. Incorrect format try another keyword. This could be due to a playlist or a livestream format."
+                    )
 
                 else:
-                  for num in range(11):
-                    self.music_queue.append([song, voice_channel])
+                    for _ in range(11):
+                        self.music_queue.append([song, voice_channel])
 
-                  if self.is_playing == False:
-                    await self.play_music()
+                    if self.is_playing == False:
+                      await self.play_music()
 
     @commands.command(aliases = ['c'])
     async def clear(self, ctx):
         if self.vc != "" and self.vc:
             self.vc.stop()
 
-        for num in range(len(self.music_queue)):
+        for _ in range(len(self.music_queue)):
             self.music_queue.pop()
         x = randrange(1,3)
         await ctx.send("Queue Cleared!")

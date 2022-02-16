@@ -87,7 +87,7 @@ class slash_cog(commands.Cog):
 
             # try to connect to voice channel if you are not already connected
 
-            if self.vc == "" or not self.vc.is_connected() or self.vc == None:
+            if self.vc == "" or not self.vc.is_connected() or self.vc is None:
                 self.vc = await self.music_queue[0][1].connect()
             else:
                 await self.vc.move_to(self.music_queue[0][1])
@@ -179,22 +179,21 @@ class slash_cog(commands.Cog):
     @slash_command(name="queue", description="Displays the current songs in queue")
     async def queue(self, ctx):
         await ctx.defer()
+        retval = ""
         if len(self.music_queue) <= 50:
-            retval = ""
-            for i in range(0, len(self.music_queue)):
+            for i in range(len(self.music_queue)):
                 retval += self.music_queue[i][0]['title'] + "\n"
 
             print(retval)
 
-            if retval != "":
-                await ctx.respond(retval)
-                await ctx.respond('https://tenor.com/view/squid-game-netflix-egybest-film-squid-gif-23324577')
-            else:
+            if not retval:
                 await ctx.respond("No music in queue")
 
+            else:
+                await ctx.respond(retval)
+                await ctx.respond('https://tenor.com/view/squid-game-netflix-egybest-film-squid-gif-23324577')
         else:
-            retval = ""
-            for i in range(0, 51):
+            for i in range(51):
                 retval += self.music_queue[i][0]['title'] + "\n"
 
             print(retval)
